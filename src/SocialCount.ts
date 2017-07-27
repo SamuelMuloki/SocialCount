@@ -6,20 +6,22 @@ import * as dojoStyle from "dojo/dom-style";
 import * as dom from "dojo/dom";
 // import * as FB from "fb";
 
-// import * as facebook from "facebook-js-sdk";
-// declare var FB: facebook.FacebookStatic;
-
 class SocialCount extends WidgetBase {
 
     // Parameters to be configured in the modeler.
     AppId: string;
     AppSecret: string;
     AppName: string;
+    script: string;
 
-     FB: any;
+    // variables
+    element: HTMLDocument;
+    id: string;
+    fjs: any;
 
     postCreate() {
         console.log("Your program has executed postCreate");
+        this.loadSDK(this.element, this.script, this.id);
     }
 
     update(object: mendix.lib.MxObject, callback?: () => void) {
@@ -28,38 +30,59 @@ class SocialCount extends WidgetBase {
             callback();
         }
     }
- 
-    private loadScript(){
-        //todo
-    }
 
     private Fb_init() {
         FB.init({
             appId: "484256748573575",
-            version: "v2.5",
-            status: true,
             cookie: true,
+            status: true,
+            version: "v2.5",
             xfbml: true
         });
-        console.log("Succesfully connected!");
+        FB.getLoginStatus((response) => {
+            this.statusChangeCallback(response);
+        });
     }
 
     private loginStatus() {
-        FB.getLoginStatus((response: fb.AuthResponse) => {
-            console.log(response);
-            console.log(response.status);
+        // todo
+    }
+
+    private loadSDK(element: HTMLDocument, script: string, id: string) {
+        let js: any;
+        const fjs: Element = element.getElementsByTagName(script)[0];
+        if (element.getElementById(id)) { return; }
+        js = element.createElement(script);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        if (fjs.parentNode) {
+            fjs.parentNode.insertBefore(js, fjs);
+        }
+    }
+
+    private statusChangeCallback(response: any) {
+        if (response.status === "connected") {
+            console.log("Authenticated");
             console.log(response.authResponse.accessToken);
+            FB.api("/111028836222296?fields=name,new_like_count", (response: any) => {
+                console.log(JSON.stringify(response));
+            });
+        } else {
+            console.log("Not authenticated");
+        }
+    }
+
+    private checkLoginState() {
+        FB.getLoginStatus((response) => {
+            this.statusChangeCallback(response);
         });
     }
 
     private displayButton() {
-        domConstruct.create("input", {
-            class: "form-control btn-default",
-            type: "button",
-            value: "Post"
-        }, this.domNode).addEventListener("click", () => {
-            this.Fb_init();
-        });
+        domConstruct.create("div", {
+            innerHTML: `<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                        </fb:login-button>`
+        }, this.domNode);
     }
 
     private updateRendering() {
