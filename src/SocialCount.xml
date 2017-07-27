@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="widget.SocialCount" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+    <name>SocialCount</name>
+    <description>The description of this widget.</description>
+    <icon />
+    <properties>
+        <property key="AppId" type="string" required="false" defaultValue="">
+            <caption>AppId</caption>
+            <category>Appearance</category>
+            <description>Used to access the Facebook SDK</description>
+        </property>
+        <property key="AppSecret" type="string" required="false" defaultValue="">
+            <caption>AppSecret</caption>
+            <category>Appearance</category>
+            <description>Authenticates requests made by the application to Facebook servers</description>
+        </property>
+         <property key="AppName" type="string" required="false" defaultValue="">
+            <caption>AppName</caption>
+            <category>Appearance</category>
+            <description>Identifies the application</description>
+        </property>
+    </properties>
+</widget>
