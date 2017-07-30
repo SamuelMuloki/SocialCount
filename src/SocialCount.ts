@@ -4,7 +4,7 @@ import * as WidgetBase from "mxui/widget/_WidgetBase";
 import * as dojoClass from "dojo/dom-class";
 import * as dojoStyle from "dojo/dom-style";
 import * as dom from "dojo/dom";
-// import * as FB from "fb";
+// import "https://connect.facebook.net/en_US/all.js";
 
 class SocialCount extends WidgetBase {
 
@@ -12,16 +12,15 @@ class SocialCount extends WidgetBase {
     AppId: string;
     AppSecret: string;
     AppName: string;
-    script: string;
-
-    // variables
-    element: HTMLDocument;
-    id: string;
-    fjs: any;
 
     postCreate() {
         console.log("Your program has executed postCreate");
-        this.loadSDK(this.element, this.script, this.id);
+        this.FbAsync();
+        domConstruct.create("div", {
+            class: "widget-social-count",
+            innerHTML: `<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                        </fb:login-button>`
+        }, this.domNode);
     }
 
     update(object: mendix.lib.MxObject, callback?: () => void) {
@@ -31,33 +30,45 @@ class SocialCount extends WidgetBase {
         }
     }
 
-    private Fb_init() {
+    private delay(milliseconds: number, count: number): Promise<number> {
+        return new Promise<number>(resolve => {
+            setTimeout(() => {
+                resolve(count);
+            }, milliseconds);
+        });
+    }
+
+    private async FbAsync(): Promise<void> {
+        this.loadScript();
+        for (let i = 0; i < 5; i++) {
+            const count: number = await this.delay(500, i);
+            console.log(count);
+        }
+        this.Fb_init();
+    }
+
+    private async loadScript() {
+        ((d: HTMLDocument, s: string, id: string) => {
+            let js: any;
+            const fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            if (fjs.parentNode) fjs.parentNode.insertBefore(js, fjs);
+            })(document, "script", "facebook-jssdk");
+        }
+
+    private async Fb_init() {
         FB.init({
-            appId: "484256748573575",
+            appId: "159229304625007",
             cookie: true,
-            status: true,
-            version: "v2.5",
+            version: "v2.8",
             xfbml: true
         });
         FB.getLoginStatus((response) => {
             this.statusChangeCallback(response);
         });
-    }
-
-    private loginStatus() {
-        // todo
-    }
-
-    private loadSDK(element: HTMLDocument, script: string, id: string) {
-        let js: any;
-        const fjs: Element = element.getElementsByTagName(script)[0];
-        if (element.getElementById(id)) { return; }
-        js = element.createElement(script);
-        js.id = id;
-        js.src = "//connect.facebook.net/en_US/sdk.js";
-        if (fjs.parentNode) {
-            fjs.parentNode.insertBefore(js, fjs);
-        }
     }
 
     private statusChangeCallback(response: any) {
@@ -78,17 +89,8 @@ class SocialCount extends WidgetBase {
         });
     }
 
-    private displayButton() {
-        domConstruct.create("div", {
-            innerHTML: `<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-                        </fb:login-button>`
-        }, this.domNode);
-    }
-
     private updateRendering() {
         // todo
-        this.displayButton();
-        // this.loginStatus();
     }
 }
 

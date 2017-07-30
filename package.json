@@ -12,6 +12,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.27.1",
     "extract-text-webpack-plugin": "^2.1.0",
+    "fb": "^2.0.0",
     "grunt": "^1.0.1",
     "grunt-check-dependencies": "^1.0.0",
     "grunt-contrib-clean": "^1.0.0",
@@ -32,6 +33,6 @@
     "webpack-dev-server": "^2.5.1"
   },
   "dependencies": {
-    "@types/facebook-js-sdk": "^2.8.2"
+    "fb": "^2.0.0"
   }
 }

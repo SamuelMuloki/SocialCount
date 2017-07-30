@@ -22,10 +22,9 @@ module.exports = {
         ]
     },
     devtool: "source-map",
-    externals: [ /^mxui\/|^mendix\/|^dojo\/|^dijit\/|^fb\// ],
+    externals: [ /^mxui\/|^mendix\/|^dojo\/|^dijit\// ],
     plugins: [
         new CopyWebpackPlugin([
-            { from: "src/**/*.js" },
             { from: "src/**/*.xml" }
         ], {
             copyUnmodified: true
