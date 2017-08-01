@@ -41,7 +41,7 @@ module.exports = function(grunt) {
         copy: {
             distDeployment: {
                 files: [ {
-                    dest: "./dist/test/deployment/web/widgets",
+                    dest: "./dist/SocialCounts-main/deployment/web/widgets",
                     cwd: "./dist/tmp/src/",
                     src: [ "**/*" ],
                     expand: true
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
             },
             mpk: {
                 files: [ {
-                    dest: "./dist/test/widgets",
+                    dest: "./dist/SocialCounts-main/widgets",
                     cwd: "./dist/" + pkg.version + "/",
                     src: [ pkg.name + ".mpk" ],
                     expand: true
@@ -73,8 +73,8 @@ module.exports = function(grunt) {
             build: [
                 "./dist/" + pkg.version + "/" + pkg.name + "/*",
                 "./dist/tmp/**/*",
-                "./dist/test/deployment/web/widgets/" + pkg.name + "/*",
-                "./dist/test/widgets/" + pkg.name + ".mpk"
+                "./dist/SocialCounts-main/deployment/web/widgets/" + pkg.name + "/*",
+                "./dist/SocialCounts-main/widgets/" + pkg.name + ".mpk"
             ]
         },
 

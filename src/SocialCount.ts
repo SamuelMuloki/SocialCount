@@ -4,7 +4,8 @@ import * as WidgetBase from "mxui/widget/_WidgetBase";
 import * as dojoClass from "dojo/dom-class";
 import * as dojoStyle from "dojo/dom-style";
 import * as dom from "dojo/dom";
-// import "https://connect.facebook.net/en_US/all.js";
+
+import "./ui/fb.css";
 
 class SocialCount extends WidgetBase {
 
@@ -13,13 +14,18 @@ class SocialCount extends WidgetBase {
     AppSecret: string;
     AppName: string;
 
+    // Private variables
+    private response: any;
+
     postCreate() {
-        console.log("Your program has executed postCreate");
         this.FbAsync();
+        // review with mr. Edwin
         domConstruct.create("div", {
             class: "widget-social-count",
-            innerHTML: `<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-                        </fb:login-button>`
+            id: "facebook",
+            innerHTML: `<link rel="stylesheet" 
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+            <a href ="#"class="fa fa-facebook"></a>`
         }, this.domNode);
     }
 
@@ -29,7 +35,7 @@ class SocialCount extends WidgetBase {
             callback();
         }
     }
-
+    // useless code remove
     private delay(milliseconds: number, count: number): Promise<number> {
         return new Promise<number>(resolve => {
             setTimeout(() => {
@@ -47,6 +53,8 @@ class SocialCount extends WidgetBase {
         this.Fb_init();
     }
 
+    // Not proper, use node_modules or include the lib not via http!!
+    // Review with Mr. Edwin.
     private async loadScript() {
         ((d: HTMLDocument, s: string, id: string) => {
             let js: any;
@@ -56,10 +64,11 @@ class SocialCount extends WidgetBase {
             js.id = id;
             js.src = "//connect.facebook.net/en_US/sdk.js";
             if (fjs.parentNode) fjs.parentNode.insertBefore(js, fjs);
-            })(document, "script", "facebook-jssdk");
-        }
+        })(document, "script", "facebook-jssdk");
+    }
 
     private async Fb_init() {
+        // To review with Mr. Edwin
         FB.init({
             appId: "159229304625007",
             cookie: true,
@@ -70,13 +79,15 @@ class SocialCount extends WidgetBase {
             this.statusChangeCallback(response);
         });
     }
-
+    // Terrible!! No hard coding, Poor structure
+    // to review with Mr. Edwin
     private statusChangeCallback(response: any) {
         if (response.status === "connected") {
-            console.log("Authenticated");
-            console.log(response.authResponse.accessToken);
-            FB.api("/111028836222296?fields=name,new_like_count", (response: any) => {
-                console.log(JSON.stringify(response));
+            FB.api("/111028836222296?fields=name,new_like_count,about,posts{shares,comments}", (response: any) => {
+                console.log(JSON.stringify(response.posts));
+                console.log(this.AppId);
+                domConstruct.place("<div class ='likes'>" +
+                    (JSON.stringify(response.new_like_count) + "<br/> Likes") + "</div>", "facebook");
             });
         } else {
             console.log("Not authenticated");

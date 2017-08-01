@@ -29,7 +29,7 @@ module.exports = {
         ], {
             copyUnmodified: true
         }),
-        new ExtractTextPlugin("./src/org/flockofbirds/widget/SocialCount/ui/SocialCount.css"),
+        new ExtractTextPlugin("./src/widget/ui/SocialCount.css"),
         new webpack.LoaderOptionsPlugin({
             debug: true
         })
