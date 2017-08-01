@@ -21,6 +21,9 @@ module.exports = {
             }) }
         ]
     },
+    node: {
+        fs: 'empty'
+    },
     devtool: "source-map",
     externals: [ /^mxui\/|^mendix\/|^dojo\/|^dijit\// ],
     plugins: [

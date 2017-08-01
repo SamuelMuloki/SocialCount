@@ -5,6 +5,8 @@ import * as dojoClass from "dojo/dom-class";
 import * as dojoStyle from "dojo/dom-style";
 import * as dom from "dojo/dom";
 
+import * as FB from "fb";
+
 import "./ui/fb.css";
 
 class SocialCount extends WidgetBase {
@@ -13,13 +15,20 @@ class SocialCount extends WidgetBase {
     AppId: string;
     AppSecret: string;
     AppName: string;
+    AppToken: string;
 
     // Private variables
     private response: any;
+    private options: any;
+    private version: any;
+    private contextObject: mendix.lib.MxObject;
+    // private appId: "159229304625007";
+    // private appSecret: "823f7ad647eaa326c820896a6eaf8bd7";
+    private api: any;
 
     postCreate() {
-        this.FbAsync();
-        // review with mr. Edwin
+        console.log(FB);
+
         domConstruct.create("div", {
             class: "widget-social-count",
             id: "facebook",
@@ -35,73 +44,23 @@ class SocialCount extends WidgetBase {
             callback();
         }
     }
-    // useless code remove
-    private delay(milliseconds: number, count: number): Promise<number> {
-        return new Promise<number>(resolve => {
-            setTimeout(() => {
-                resolve(count);
-            }, milliseconds);
-        });
-    }
-
-    private async FbAsync(): Promise<void> {
-        this.loadScript();
-        for (let i = 0; i < 5; i++) {
-            const count: number = await this.delay(500, i);
-            console.log(count);
-        }
-        this.Fb_init();
-    }
-
-    // Not proper, use node_modules or include the lib not via http!!
-    // Review with Mr. Edwin.
-    private async loadScript() {
-        ((d: HTMLDocument, s: string, id: string) => {
-            let js: any;
-            const fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js";
-            if (fjs.parentNode) fjs.parentNode.insertBefore(js, fjs);
-        })(document, "script", "facebook-jssdk");
-    }
-
-    private async Fb_init() {
-        // To review with Mr. Edwin
-        FB.init({
-            appId: "159229304625007",
-            cookie: true,
-            version: "v2.8",
-            xfbml: true
-        });
-        FB.getLoginStatus((response) => {
-            this.statusChangeCallback(response);
-        });
-    }
-    // Terrible!! No hard coding, Poor structure
-    // to review with Mr. Edwin
-    private statusChangeCallback(response: any) {
-        if (response.status === "connected") {
-            FB.api("/111028836222296?fields=name,new_like_count,about,posts{shares,comments}", (response: any) => {
-                console.log(JSON.stringify(response.posts));
-                console.log(this.AppId);
-                domConstruct.place("<div class ='likes'>" +
-                    (JSON.stringify(response.new_like_count) + "<br/> Likes") + "</div>", "facebook");
-            });
-        } else {
-            console.log("Not authenticated");
-        }
-    }
-
-    private checkLoginState() {
-        FB.getLoginStatus((response) => {
-            this.statusChangeCallback(response);
-        });
-    }
 
     private updateRendering() {
-        // todo
+        if (this.contextObject) {
+            FB.options({ version: "v2.10" });
+            const SocialCount = FB.extend(this.contextObject.get(this.AppId), this.contextObject.get(this.AppSecret));
+            FB.setAccessToken(this.contextObject.get(this.AppToken));
+
+            FB.api(this.contextObject.get(this.AppId) + "?fields=name,new_like_count", function (response: any) {
+                if (!response || response.error) {
+                    console.log(!response ? "error occurred" : response.error);
+                    return;
+                }
+                domConstruct.place("<div>" + (response.new_like_count) + " Likes</div>", "facebook");
+            });
+        } else {
+            console.log("Context Object not set click in the data grid!!");
+        }
     }
 }
 

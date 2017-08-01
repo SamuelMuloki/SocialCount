@@ -4,20 +4,42 @@
     <description>The description of this widget.</description>
     <icon />
     <properties>
-        <property key="AppId" type="string" required="false" defaultValue="">
+       <property key="SocialCounts" type="entity" required="true" defaultValue="">
+            <caption>Entity</caption>
+            <category>Behavior</category>
+            <description>This is an Entity</description>
+        </property>
+        <property key="AppId" type="attribute" entityProperty="SocialCounts" required="true" defaultValue="">
             <caption>AppId</caption>
             <category>Appearance</category>
             <description>Used to access the Facebook SDK</description>
+            <attributeTypes>
+               <attributeType name="String" />
+            </attributeTypes>
         </property>
-        <property key="AppSecret" type="string" required="false" defaultValue="">
+        <property key="AppSecret" type="attribute" entityProperty="SocialCounts" required="true" defaultValue="">
             <caption>AppSecret</caption>
             <category>Appearance</category>
             <description>Authenticates requests made by the application to Facebook servers</description>
+            <attributeTypes>
+               <attributeType name="String" />
+            </attributeTypes>
         </property>
-         <property key="AppName" type="string" required="false" defaultValue="">
+         <property key="AppName" type="attribute" entityProperty="SocialCounts" required="false" defaultValue="">
             <caption>AppName</caption>
             <category>Appearance</category>
             <description>Identifies the application</description>
+            <attributeTypes>
+               <attributeType name="String" />
+            </attributeTypes>
+        </property>
+        <property key="AppToken" type="attribute" entityProperty="SocialCounts" required="true" defaultValue="">
+            <caption>AppToken</caption>
+            <category>Appearance</category>
+            <description>Token required to run the widget, its gotten from facebook</description>
+            <attributeTypes>
+               <attributeType name="String" />
+            </attributeTypes>
         </property>
     </properties>
 </widget>
