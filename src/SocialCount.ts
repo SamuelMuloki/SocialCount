@@ -14,7 +14,6 @@ class SocialCount extends WidgetBase {
     // Parameters to be configured in the modeler.
     AppId: string;
     AppSecret: string;
-    AppName: string;
     AppToken: string;
 
     // Private variables
@@ -22,23 +21,23 @@ class SocialCount extends WidgetBase {
     private options: any;
     private version: any;
     private contextObject: mendix.lib.MxObject;
-    // private appId: "159229304625007";
-    // private appSecret: "823f7ad647eaa326c820896a6eaf8bd7";
     private api: any;
 
     postCreate() {
-        console.log(FB);
-
         domConstruct.create("div", {
             class: "widget-social-count",
             id: "facebook",
-            innerHTML: `<link rel="stylesheet" 
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-            <a href ="#"class="fa fa-facebook"></a>`
+            innerHTML: `<p class="fblogo">Facebook</p>`
+        }, this.domNode);
+        domConstruct.create("div", {
+            class: "widget-social-count",
+            id: "fans",
+            innerHTML: ``
         }, this.domNode);
     }
 
     update(object: mendix.lib.MxObject, callback?: () => void) {
+        this.contextObject = object;
         this.updateRendering();
         if (callback) {
             callback();
@@ -50,14 +49,14 @@ class SocialCount extends WidgetBase {
             FB.options({ version: "v2.10" });
             const SocialCount = FB.extend(this.contextObject.get(this.AppId), this.contextObject.get(this.AppSecret));
             FB.setAccessToken(this.contextObject.get(this.AppToken));
-
-            FB.api(this.contextObject.get(this.AppId) + "?fields=name,new_like_count", function (response: any) {
-                if (!response || response.error) {
-                    console.log(!response ? "error occurred" : response.error);
-                    return;
-                }
-                domConstruct.place("<div>" + (response.new_like_count) + " Likes</div>", "facebook");
-            });
+            FB.api(this.contextObject.get(this.AppId) as string
+                + "?fields=name, fan_count", function(response: any) {
+                    if (!response || response.error) {
+                        console.log(!response ? "error occurred" : response.error);
+                        return;
+                    }
+                    dom.byId("fans").innerHTML = response.fan_count + " Likes";
+                });
         } else {
             console.log("Context Object not set click in the data grid!!");
         }

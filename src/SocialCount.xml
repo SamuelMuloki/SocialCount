@@ -25,14 +25,14 @@
                <attributeType name="String" />
             </attributeTypes>
         </property>
-         <property key="AppName" type="attribute" entityProperty="SocialCounts" required="false" defaultValue="">
+         <!--<property key="AppName" type="attribute" entityProperty="SocialCounts" required="false" defaultValue="">
             <caption>AppName</caption>
             <category>Appearance</category>
             <description>Identifies the application</description>
             <attributeTypes>
                <attributeType name="String" />
             </attributeTypes>
-        </property>
+        </property>-->
         <property key="AppToken" type="attribute" entityProperty="SocialCounts" required="true" defaultValue="">
             <caption>AppToken</caption>
             <category>Appearance</category>
