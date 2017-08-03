@@ -27,7 +27,7 @@ class SocialCount extends WidgetBase {
         domConstruct.create("div", {
             class: "widget-social-count",
             id: "facebook",
-            innerHTML: `<p class="fblogo">Facebook</p>`
+            innerHTML: `<div class="app"></div>`
         }, this.domNode);
         domConstruct.create("div", {
             class: "widget-social-count",
