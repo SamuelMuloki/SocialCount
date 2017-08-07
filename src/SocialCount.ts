@@ -6,7 +6,6 @@ import * as dojoStyle from "dojo/dom-style";
 import * as dom from "dojo/dom";
 
 import * as FB from "fb";
-
 import "./ui/fb.css";
 
 class SocialCount extends WidgetBase {
@@ -15,6 +14,7 @@ class SocialCount extends WidgetBase {
     AppId: string;
     AppSecret: string;
     AppToken: string;
+    mfToExecute: string;
 
     // Private variables
     private response: any;
@@ -25,9 +25,8 @@ class SocialCount extends WidgetBase {
 
     postCreate() {
         domConstruct.create("div", {
-            class: "widget-social-count",
             id: "facebook",
-            innerHTML: `<div class="app"></div>`
+            innerHTML: ``
         }, this.domNode);
         domConstruct.create("div", {
             class: "widget-social-count",
@@ -38,27 +37,106 @@ class SocialCount extends WidgetBase {
 
     update(object: mendix.lib.MxObject, callback?: () => void) {
         this.contextObject = object;
-        this.updateRendering();
+        this.resetSubscription();
+        this.updateRendering(callback);
         if (callback) {
             callback();
         }
     }
 
-    private updateRendering() {
+    uninitialise(): boolean {
+        return true;
+    }
+
+    private execMf(mf: any, guid: any, callback?: any){
+        if (mf && guid) {
+            mx.ui.action(mf, {
+                params: {
+                    applyto: "selection",
+                    guids: [ guid ]
+                },
+                callback: ((obj: mendix.lib.MxObject) => {
+                    if (callback && typeof callback === "function") {
+                        callback(obj);
+                    }
+                }),
+                error: (error) => {
+                    mx.ui.error("Error executing microflow " + mf + " : " + error.message);
+                }
+            }, this);
+        }
+    }
+
+    private setupEvents() {
+        if (this.mfToExecute) {
+            this.execMf(this.mfToExecute, this.contextObject.getGuid());
+        }
+    }
+
+    private updateRendering(callback?: any) {
+        this.setupEvents();
         if (this.contextObject) {
             FB.options({ version: "v2.10" });
             const SocialCount = FB.extend(this.contextObject.get(this.AppId), this.contextObject.get(this.AppSecret));
             FB.setAccessToken(this.contextObject.get(this.AppToken));
             FB.api(this.contextObject.get(this.AppId) as string
-                + "?fields=name, fan_count", function(response: any) {
+                + "?fields=name, fan_count", (response: any) => {
                     if (!response || response.error) {
                         console.log(!response ? "error occurred" : response.error);
                         return;
                     }
-                    dom.byId("fans").innerHTML = response.fan_count + " Likes";
+                    dom.byId("facebook").innerHTML = "<div class='app'></div>";
+                    dom.byId("fans").innerHTML = response.fan_count + "<br/><div class='widget-likes'>Likes</div>";
                 });
         } else {
+            dom.byId("facebook").innerHTML = "<div class='app hidden'></div>";
+            dom.byId("fans").innerHTML = "<div class='widget-likes hidden'></div>";
             console.log("Context Object not set click in the data grid!!");
+        }
+
+        this.executeCallback(callback, "updateRendering");
+    }
+
+    resetSubscription() {
+        this.unsubscribeAll();
+
+        if (this.contextObject) {
+            this.subscribe({
+                guid: this.contextObject.getGuid(),
+                callback: ((guid) => {
+                    this.updateRendering();
+                })
+            });
+
+            this.subscribe({
+                guid: this.contextObject.getGuid(),
+                attr: this.AppId,
+                callback: ((guid, attr, attrValue)=>{
+                    this.updateRendering();
+                })
+            });
+
+            this.subscribe({
+                guid: this.contextObject.getGuid(),
+                attr: this.AppSecret,
+                callback: ((guid, attr, attrValue) => {
+                    this.updateRendering();
+                })
+            });
+
+            this.subscribe({
+                guid: this.contextObject.getGuid(),
+                attr: this.AppToken,
+                callback: ((guid, attr, attrValue) => {
+                    this.updateRendering();
+                })
+            });
+        }
+    }
+
+    private executeCallback(callback: any, from: any) {
+        if (callback && typeof callback === "function"){
+            callback();
         }
     }
 }
