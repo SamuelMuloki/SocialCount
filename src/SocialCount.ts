@@ -22,6 +22,7 @@ class SocialCount extends WidgetBase {
     private version: any;
     private contextObject: mendix.lib.MxObject;
     private api: any;
+    private jsonData: any;
 
     postCreate() {
         domConstruct.create("div", {
@@ -38,6 +39,7 @@ class SocialCount extends WidgetBase {
     update(object: mendix.lib.MxObject, callback?: () => void) {
         this.contextObject = object;
         this.resetSubscription();
+        this.setupEvents();
         this.updateRendering(callback);
         if (callback) {
             callback();
@@ -48,18 +50,14 @@ class SocialCount extends WidgetBase {
         return true;
     }
 
-    private execMf(mf: any, guid: any, callback?: any){
+    private execMf(mf: string, guid: string, callback?: () => {}){
         if (mf && guid) {
             mx.ui.action(mf, {
                 params: {
                     applyto: "selection",
                     guids: [ guid ]
                 },
-                callback: ((obj: mendix.lib.MxObject) => {
-                    if (callback && typeof callback === "function") {
-                        callback(obj);
-                    }
-                }),
+                callback: () => {},
                 error: (error) => {
                     mx.ui.error("Error executing microflow " + mf + " : " + error.message);
                 }
@@ -74,7 +72,6 @@ class SocialCount extends WidgetBase {
     }
 
     private updateRendering(callback?: any) {
-        this.setupEvents();
         if (this.contextObject) {
             FB.options({ version: "v2.10" });
             const SocialCount = FB.extend(this.contextObject.get(this.AppId), this.contextObject.get(this.AppSecret));
@@ -89,12 +86,8 @@ class SocialCount extends WidgetBase {
                     dom.byId("fans").innerHTML = response.fan_count + "<br/><div class='widget-likes'>Likes</div>";
                 });
         } else {
-            dom.byId("facebook").innerHTML = "<div class='app hidden'></div>";
-            dom.byId("fans").innerHTML = "<div class='widget-likes hidden'></div>";
-            console.log("Context Object not set click in the data grid!!");
+           mx.ui.error("");
         }
-
-        this.executeCallback(callback, "updateRendering");
     }
 
     resetSubscription() {
@@ -131,12 +124,6 @@ class SocialCount extends WidgetBase {
                     this.updateRendering();
                 })
             });
-        }
-    }
-
-    private executeCallback(callback: any, from: any) {
-        if (callback && typeof callback === "function"){
-            callback();
         }
     }
 }
