@@ -1,8 +1,8 @@
 {
   "name": "SocialCount",
   "widgetName": "SocialCount",
-  "version": "0.1.0",
-  "description": "This widget watches a particular pagfe and returns the number of likes, shares, comments and posts for a particular item ",
+  "version": "1.0.0",
+  "description": "This widget watches a particular facebook page and returns the number of likes",
   "author": "Muloki Samuel, Freedom Gemmar",
   "copyright": "Flock of Birds",
   "private": true,

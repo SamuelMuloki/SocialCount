@@ -1,35 +1,29 @@
 import * as dojoDeclare from "dojo/_base/declare";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
-import * as dojoClass from "dojo/dom-class";
-import * as dojoStyle from "dojo/dom-style";
 import * as dom from "dojo/dom";
 
 import * as FB from "fb";
 import "./ui/fb.css";
 
 class SocialCount extends WidgetBase {
-
     // Parameters to be configured in the modeler.
     AppId: string;
     AppSecret: string;
     AppToken: string;
-    mfToExecute: string;
+    microflowToExecute: string;
 
     // Private variables
-    private response: any;
-    private options: any;
-    private version: any;
     private contextObject: mendix.lib.MxObject;
-    private api: any;
-    private jsonData: any;
+    private facebookNode: HTMLElement;
+    private fansNode: HTMLElement;
 
     postCreate() {
-        domConstruct.create("div", {
+        this.facebookNode = domConstruct.create("div", {
             id: "facebook",
             innerHTML: ``
         }, this.domNode);
-        domConstruct.create("div", {
+        this.fansNode = domConstruct.create("div", {
             class: "widget-social-count",
             id: "fans",
             innerHTML: ``
@@ -40,90 +34,64 @@ class SocialCount extends WidgetBase {
         this.contextObject = object;
         this.resetSubscription();
         this.setupEvents();
-        this.updateRendering(callback);
+        this.updateRendering();
         if (callback) {
+            console.log("callback in update");
             callback();
         }
     }
 
-    uninitialise(): boolean {
-        return true;
-    }
-
-    private execMf(mf: string, guid: string, callback?: () => {}){
-        if (mf && guid) {
-            mx.ui.action(mf, {
-                params: {
-                    applyto: "selection",
-                    guids: [ guid ]
-                },
-                callback: () => {},
-                error: (error) => {
-                    mx.ui.error("Error executing microflow " + mf + " : " + error.message);
-                }
-            }, this);
+    resetSubscription() {
+        if (this.contextObject) {
+            const Subscription = this.subscribe({
+                guid: this.contextObject.getGuid(),
+                callback: ((guid) => {
+                    console.log("Object with guid " + guid + " changed");
+                    this.updateRendering();
+                })
+            });
+            mx.data.unsubscribe(Subscription);
         }
     }
 
     private setupEvents() {
-        if (this.mfToExecute) {
-            this.execMf(this.mfToExecute, this.contextObject.getGuid());
+        if (this.microflowToExecute) {
+            this.execMicroflow(this.microflowToExecute, this.contextObject.getGuid());
         }
     }
 
-    private updateRendering(callback?: any) {
+    private execMicroflow(microflow: string, guid: string) {
+        if (microflow && guid) {
+            mx.ui.action(microflow, {
+                params: {
+                    applyto: "selection",
+                    guids: [guid]
+                },
+                callback: () => {
+                    console.log("Microflow executed");
+                },
+                error: (error) => { mx.ui.error("Error executing microflow " + microflow + " : " + error.message); }
+            }, this);
+        }
+    }
+
+    private updateRendering() {
         if (this.contextObject) {
             FB.options({ version: "v2.10" });
-            const SocialCount = FB.extend(this.contextObject.get(this.AppId), this.contextObject.get(this.AppSecret));
+            FB.extend(this.contextObject.get(this.AppId), this.contextObject.get(this.AppSecret));
             FB.setAccessToken(this.contextObject.get(this.AppToken));
             FB.api(this.contextObject.get(this.AppId) as string
                 + "?fields=name, fan_count", (response: any) => {
                     if (!response || response.error) {
-                        console.log(!response ? "error occurred" : response.error);
+                        // domConstruct.empty(this.domNode);
+                        mx.ui.error(!response ? "error occurred" : response.error);
                         return;
                     }
-                    dom.byId("facebook").innerHTML = "<div class='app'></div>";
-                    dom.byId("fans").innerHTML = response.fan_count + "<br/><div class='widget-likes'>Likes</div>";
+                    this.facebookNode.innerHTML = "<div class='app'></div>";
+                    this.fansNode.innerHTML = response.fan_count + "<br/><div class='widget-likes'>Likes</div>";
                 });
         } else {
-           mx.ui.error("");
-        }
-    }
-
-    resetSubscription() {
-        this.unsubscribeAll();
-
-        if (this.contextObject) {
-            this.subscribe({
-                guid: this.contextObject.getGuid(),
-                callback: ((guid) => {
-                    this.updateRendering();
-                })
-            });
-
-            this.subscribe({
-                guid: this.contextObject.getGuid(),
-                attr: this.AppId,
-                callback: ((guid, attr, attrValue)=>{
-                    this.updateRendering();
-                })
-            });
-
-            this.subscribe({
-                guid: this.contextObject.getGuid(),
-                attr: this.AppSecret,
-                callback: ((guid, attr, attrValue) => {
-                    this.updateRendering();
-                })
-            });
-
-            this.subscribe({
-                guid: this.contextObject.getGuid(),
-                attr: this.AppToken,
-                callback: ((guid, attr, attrValue) => {
-                    this.updateRendering();
-                })
-            });
+            // mx.ui.error("No context Object Specified, Select a context Object in the modeler");
         }
     }
 }

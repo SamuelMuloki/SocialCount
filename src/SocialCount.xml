@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <widget id="widget.SocialCount" needsEntityContext="false" xmlns="http://www.mendix.com/widget/1.0/">
     <name>SocialCount</name>
-    <description>The description of this widget.</description>
+    <description>This widget watches a particular facebook page and returns the number of likes.</description>
     <icon />
     <properties>
-       <property key="fb_SocialCounts" type="entity" required="false" defaultValue="">
-            <caption>Facebook Entity</caption>
+       <property key="facebook_count" type="entity" required="false" defaultValue="">
+            <caption>Facebook entity</caption>
             <category>Behavior</category>
-            <description>This is a Facebook Entity</description>
+            <description>This is a Facebook application entity</description>
         </property>
-        <property key="AppId" type="attribute" entityProperty="fb_SocialCounts" required="false" defaultValue="">
+        <property key="AppId" type="attribute" entityProperty="facebook_count" required="false" defaultValue="">
             <caption>Facebook AppId</caption>
             <category>Appearance</category>
             <description>Used to access the Facebook SDK</description>
@@ -17,7 +17,7 @@
                <attributeType name="String" />
             </attributeTypes>
         </property>
-        <property key="AppSecret" type="attribute" entityProperty="fb_SocialCounts" required="false" defaultValue="">
+        <property key="AppSecret" type="attribute" entityProperty="facebook_count" required="false" defaultValue="">
             <caption>Facebook AppSecret</caption>
             <category>Appearance</category>
             <description>Authenticates requests made by the application to Facebook servers</description>
@@ -25,7 +25,7 @@
                <attributeType name="String" />
             </attributeTypes>
         </property>
-        <property key="AppToken" type="attribute" entityProperty="fb_SocialCounts" required="false" defaultValue="">
+        <property key="AppToken" type="attribute" entityProperty="facebook_count" required="false" defaultValue="">
             <caption>Facebook AppToken</caption>
             <category>Appearance</category>
             <description>Token required to run the widget, its gotten from facebook</description>
@@ -33,11 +33,11 @@
                <attributeType name="String" />
             </attributeTypes>
         </property>
-        <property key="mfToExecute" type="microflow" required="false" defaultValue="">
+        <property key="microflowToExecute" type="microflow" required="false" defaultValue="">
             <caption>Microflow</caption>
             <category>Data Source</category>
             <description>The microflow to execute on load.</description>
-            <returnType type="Object" entityProperty="fb_SocialCounts"/>
+            <returnType type="Object" entityProperty="facebook_count"/>
         </property>
     </properties>
 </widget>
