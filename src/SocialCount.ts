@@ -1,7 +1,6 @@
 import * as dojoDeclare from "dojo/_base/declare";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
-import * as dom from "dojo/dom";
 
 import * as FB from "fb";
 import "./ui/fb.css";
@@ -65,7 +64,7 @@ class SocialCount extends WidgetBase {
             mx.ui.action(microflow, {
                 params: {
                     applyto: "selection",
-                    guids: [guid]
+                    guids: [ guid ]
                 },
                 callback: () => {
                     console.log("Microflow executed");
@@ -76,23 +75,32 @@ class SocialCount extends WidgetBase {
     }
 
     private updateRendering() {
-        if (this.contextObject) {
-            FB.options({ version: "v2.10" });
-            FB.extend(this.contextObject.get(this.AppId), this.contextObject.get(this.AppSecret));
+        if (this.contextObject && navigator.onLine) {
             FB.setAccessToken(this.contextObject.get(this.AppToken));
             FB.api(this.contextObject.get(this.AppId) as string
-                + "?fields=name, fan_count", (response: any) => {
+                + "?fields=fan_count", (response: any) => {
                     if (!response || response.error) {
-                        // domConstruct.empty(this.domNode);
                         mx.ui.error(!response ? "error occurred" : response.error);
                         return;
                     }
                     this.facebookNode.innerHTML = "<div class='app'></div>";
-                    this.fansNode.innerHTML = response.fan_count + "<br/><div class='widget-likes'>Likes</div>";
+                    this.fansNode.innerHTML = this.customNumberFormat(response.fan_count) +
+                     "<br/><div class='widget-likes'>Likes</div>";
                 });
         } else {
+            mx.ui.error(!this.contextObject ? "No context Object Specified" : "No internet connection");
             // mx.ui.error("No context Object Specified, Select a context Object in the modeler");
         }
+    }
+
+    private customNumberFormat(fanCount: any) {
+        if (fanCount > 1000000) {
+            return Math.round(fanCount / 1000000) + "M";
+        } else if (fanCount > 1000) {
+            return Math.round(fanCount / 1000) + "K";
+        }
+
+        return fanCount;
     }
 }
 

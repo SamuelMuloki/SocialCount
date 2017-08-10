@@ -18,8 +18,10 @@
 
 .widget-social-count{
 	font-size: 20px;
+	text-align: -webkit-match-parent;
 }
 
 .widget-likes{
 	font-size: 11px;
+	text-align: -webkit-match-parent;
 }
