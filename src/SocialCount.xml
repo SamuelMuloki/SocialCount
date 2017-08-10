@@ -6,12 +6,12 @@
     <properties>
        <property key="facebook_count" type="entity" required="false" defaultValue="">
             <caption>Facebook entity</caption>
-            <category>Behavior</category>
+            <category>Data Source</category>
             <description>This is a Facebook application entity</description>
         </property>
         <property key="AppId" type="attribute" entityProperty="facebook_count" required="false" defaultValue="">
             <caption>Facebook AppId</caption>
-            <category>Appearance</category>
+            <category>Data Source</category>
             <description>Used to access the Facebook SDK</description>
             <attributeTypes>
                <attributeType name="String" />
@@ -19,7 +19,7 @@
         </property>
         <property key="AppSecret" type="attribute" entityProperty="facebook_count" required="false" defaultValue="">
             <caption>Facebook AppSecret</caption>
-            <category>Appearance</category>
+            <category>Data Source</category>
             <description>Authenticates requests made by the application to Facebook servers</description>
             <attributeTypes>
                <attributeType name="String" />
@@ -27,7 +27,7 @@
         </property>
         <property key="AppToken" type="attribute" entityProperty="facebook_count" required="false" defaultValue="">
             <caption>Facebook AppToken</caption>
-            <category>Appearance</category>
+            <category>Data Source</category>
             <description>Token required to run the widget, its gotten from facebook</description>
             <attributeTypes>
                <attributeType name="String" />

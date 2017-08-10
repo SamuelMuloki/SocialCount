@@ -4,6 +4,7 @@ import * as WidgetBase from "mxui/widget/_WidgetBase";
 
 import * as FB from "fb";
 import "./ui/fb.css";
+import { FbResponse } from "./facebook";
 
 class SocialCount extends WidgetBase {
     // Parameters to be configured in the modeler.
@@ -18,15 +19,8 @@ class SocialCount extends WidgetBase {
     private fansNode: HTMLElement;
 
     postCreate() {
-        this.facebookNode = domConstruct.create("div", {
-            id: "facebook",
-            innerHTML: ``
-        }, this.domNode);
-        this.fansNode = domConstruct.create("div", {
-            class: "widget-social-count",
-            id: "fans",
-            innerHTML: ``
-        }, this.domNode);
+        this.facebookNode = domConstruct.create("div", {}, this.domNode);
+        this.fansNode = domConstruct.create("div", {}, this.domNode);
     }
 
     update(object: mendix.lib.MxObject, callback?: () => void) {
@@ -78,9 +72,9 @@ class SocialCount extends WidgetBase {
         if (this.contextObject && navigator.onLine) {
             FB.setAccessToken(this.contextObject.get(this.AppToken));
             FB.api(this.contextObject.get(this.AppId) as string
-                + "?fields=fan_count", (response: any) => {
+                + "?fields=fan_count", (response: FbResponse) => {
                     if (!response || response.error) {
-                        mx.ui.error(!response ? "error occurred" : response.error);
+                        mx.ui.error(!response ? "error occurred" : response.error.message);
                         return;
                     }
                     this.facebookNode.innerHTML = "<div class='app'></div>";
@@ -88,8 +82,8 @@ class SocialCount extends WidgetBase {
                      "<br/><div class='widget-likes'>Likes</div>";
                 });
         } else {
-            mx.ui.error(!this.contextObject ? "No context Object Specified" : "No internet connection");
-            // mx.ui.error("No context Object Specified, Select a context Object in the modeler");
+            this.facebookNode.innerHTML = `<div class="alert alert-danger">
+            ${!this.contextObject ? "No context Object Specified" : "No internet connection"}</div>`;
         }
     }
 
