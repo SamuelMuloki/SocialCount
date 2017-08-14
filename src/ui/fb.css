@@ -1,6 +1,14 @@
  
 .app {
 	background: #3b5998;
+	border-radius: 50%;
+	display: block;
+	height: 40px;
+	width: 44px; 
+}
+
+.app.squareapp {
+	background: #3b5998;
 	border-radius: 10%;
 	display: block;
 	height: 40px;
@@ -14,7 +22,15 @@
 	font-family: Facebook Letter Faces, Arial;
 	font-size: 35px;
 	font-weight: bold;
-	margin: -20% 0 0 30%; }
+	margin: -60% 0 0 30%; 
+}
+
+.badge-notify{
+   background:red;
+   position:relative;
+   top: -14px;
+   left: 20px;
+  }
 
 .widget-social-count{
 	font-size: 20px;

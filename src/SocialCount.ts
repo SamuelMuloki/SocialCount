@@ -16,11 +16,10 @@ class SocialCount extends WidgetBase {
     // Private variables
     private contextObject: mendix.lib.MxObject;
     private facebookNode: HTMLElement;
-    private fansNode: HTMLElement;
+    private timer: any;
 
     postCreate() {
-        this.facebookNode = domConstruct.create("div", {}, this.domNode);
-        this.fansNode = domConstruct.create("div", {}, this.domNode);
+        this.facebookNode = domConstruct.create("div", { id: "fans" }, this.domNode);
     }
 
     update(object: mendix.lib.MxObject, callback?: () => void) {
@@ -58,7 +57,7 @@ class SocialCount extends WidgetBase {
             mx.ui.action(microflow, {
                 params: {
                     applyto: "selection",
-                    guids: [ guid ]
+                    guids: [guid]
                 },
                 callback: () => {
                     console.log("Microflow executed");
@@ -77,9 +76,13 @@ class SocialCount extends WidgetBase {
                         mx.ui.error(!response ? "error occurred" : response.error.message);
                         return;
                     }
-                    this.facebookNode.innerHTML = "<div class='app'></div>";
-                    this.fansNode.innerHTML = this.customNumberFormat(response.fan_count) +
-                     "<br/><div class='widget-likes'>Likes</div>";
+                    this.facebookNode.innerHTML = `<body onload= "${this.timer = setTimeout(this.refreshDiv(), 15000)}">
+                    <div class="app"><span class="badge badge-notify">
+                    ${this.customNumberFormat(response.fan_count)}</span></div>
+                    <br/><br/><div class="app squareapp"></div><span class="widget-social-count">
+                    ${this.customNumberFormat(response.fan_count)}</span>
+                    <span class="widget-likes"> Likes</span></body>`;
+                    console.log(this.timer);
                 });
         } else {
             this.facebookNode.innerHTML = `<div class="alert alert-danger">
@@ -87,7 +90,7 @@ class SocialCount extends WidgetBase {
         }
     }
 
-    private customNumberFormat(fanCount: any) {
+    private customNumberFormat(fanCount: number) {
         if (fanCount > 1000000) {
             return Math.round(fanCount / 1000000) + "M";
         } else if (fanCount > 1000) {
@@ -95,6 +98,10 @@ class SocialCount extends WidgetBase {
         }
 
         return fanCount;
+    }
+
+    private refreshDiv() {
+        top.location.href = document.URL + "#fans";
     }
 }
 
