@@ -16,7 +16,6 @@ class SocialCount extends WidgetBase {
     // Private variables
     private contextObject: mendix.lib.MxObject;
     private facebookNode: HTMLElement;
-    private timer: any;
 
     postCreate() {
         this.facebookNode = domConstruct.create("div", { id: "fans" }, this.domNode);
@@ -26,6 +25,7 @@ class SocialCount extends WidgetBase {
         this.contextObject = object;
         this.resetSubscription();
         this.setupEvents();
+        this.RetrieveLikes();
         this.updateRendering();
         if (callback) {
             console.log("callback in update");
@@ -68,6 +68,12 @@ class SocialCount extends WidgetBase {
     }
 
     private updateRendering() {
+        window.setInterval(() => {
+            this.RetrieveLikes();
+        }, 15000);
+    }
+
+    private RetrieveLikes() {
         if (this.contextObject && navigator.onLine) {
             FB.setAccessToken(this.contextObject.get(this.AppToken));
             FB.api(this.contextObject.get(this.AppId) as string
@@ -76,13 +82,11 @@ class SocialCount extends WidgetBase {
                         mx.ui.error(!response ? "error occurred" : response.error.message);
                         return;
                     }
-                    this.facebookNode.innerHTML = `<body onload= "${this.timer = setTimeout(this.refreshDiv(), 15000)}">
-                    <div class="app"><span class="badge badge-notify">
+                    this.facebookNode.innerHTML = `<div class="app"><span class="badge badge-notify">
                     ${this.customNumberFormat(response.fan_count)}</span></div>
                     <br/><br/><div class="app squareapp"></div><span class="widget-social-count">
                     ${this.customNumberFormat(response.fan_count)}</span>
-                    <span class="widget-likes"> Likes</span></body>`;
-                    console.log(this.timer);
+                    <span class="widget-likes"> Likes</span>`;
                 });
         } else {
             this.facebookNode.innerHTML = `<div class="alert alert-danger">
@@ -100,9 +104,6 @@ class SocialCount extends WidgetBase {
         return fanCount;
     }
 
-    private refreshDiv() {
-        top.location.href = document.URL + "#fans";
-    }
 }
 
 dojoDeclare("widget.SocialCount", [WidgetBase], function (Source: any) {
