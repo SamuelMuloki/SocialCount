@@ -1,6 +1,7 @@
 import * as dojoDeclare from "dojo/_base/declare";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
+import * as dom from "dojo/dom";
 
 import * as FB from "fb";
 import "./ui/fb.css";
@@ -13,12 +14,19 @@ class SocialCount extends WidgetBase {
     AppToken: string;
     microflowToExecute: string;
 
-    // Private variables
     private contextObject: mendix.lib.MxObject;
     private facebookNode: HTMLElement;
+    private facebookframe: HTMLElement;
+    private newwindow: Window;
 
     postCreate() {
+        console.log(FB);
         this.facebookNode = domConstruct.create("div", { id: "fans" }, this.domNode);
+        this.facebookNode.onclick = (() => {
+            this.newwindow = window.open("https://www.facebook.com/SocialCounts/", "Facebook", "height=550,width=550");
+            if (window.focus) { this.newwindow.focus() }
+            return false;
+        });
     }
 
     update(object: mendix.lib.MxObject, callback?: () => void) {
@@ -103,7 +111,6 @@ class SocialCount extends WidgetBase {
 
         return fanCount;
     }
-
 }
 
 dojoDeclare("widget.SocialCount", [WidgetBase], function (Source: any) {
