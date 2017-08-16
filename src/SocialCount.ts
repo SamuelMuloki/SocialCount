@@ -7,7 +7,7 @@ import "./ui/fb.css";
 import { FbResponse} from "./facebook";
 
 class SocialCount extends WidgetBase {
-    // Parameters to be configured in the modeler.
+
     AppId: string;
     AppSecret: string;
     AppToken: string;
@@ -42,15 +42,15 @@ class SocialCount extends WidgetBase {
     }
 
     resetSubscription() {
+        this.unsubscribeAll();
         if (this.contextObject) {
-            const Subscription = this.subscribe({
+            this.subscribe({
                 guid: this.contextObject.getGuid(),
                 callback: ((guid) => {
                     console.log("Object with guid " + guid + " changed");
                     this.updateRendering();
                 })
             });
-            mx.data.unsubscribe(Subscription);
         }
     }
 
@@ -65,7 +65,7 @@ class SocialCount extends WidgetBase {
             mx.ui.action(microflow, {
                 params: {
                     applyto: "selection",
-                    guids: [guid]
+                    guids: [ guid ]
                 },
                 callback: () => {
                     console.log("Microflow executed");
