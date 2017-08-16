@@ -1,11 +1,10 @@
 import * as dojoDeclare from "dojo/_base/declare";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
-import * as dom from "dojo/dom";
 
 import * as FB from "fb";
 import "./ui/fb.css";
-import { FbResponse } from "./facebook";
+import { FbResponse} from "./facebook";
 
 class SocialCount extends WidgetBase {
     // Parameters to be configured in the modeler.
@@ -23,7 +22,8 @@ class SocialCount extends WidgetBase {
         console.log(FB);
         this.facebookNode = domConstruct.create("div", { id: "fans" }, this.domNode);
         this.facebookNode.onclick = (() => {
-            this.newwindow = window.open("https://www.facebook.com/SocialCounts/", "Facebook", "height=550,width=550");
+            this.newwindow = window.open("https://www.facebook.com/Live-SocialCount-1932333973690844/",
+             "Facebook", "height=550,width=550");
             if (window.focus) { this.newwindow.focus() }
             return false;
         });
@@ -76,9 +76,10 @@ class SocialCount extends WidgetBase {
     }
 
     private updateRendering() {
+        const date = new Date();
         window.setInterval(() => {
             this.RetrieveLikes();
-        }, 15000);
+        }, date.getTime() / (12 * 60));
     }
 
     private RetrieveLikes() {
